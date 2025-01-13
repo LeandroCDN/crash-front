@@ -61,7 +61,6 @@ export default function CrashGame() {
         if (roundedValue < 1.2) return 1.1;
         if (roundedValue >= 100) return 99;
 
-        console.log("roundedValue", roundedValue);
         return roundedValue;
       });
     } else {
@@ -81,8 +80,6 @@ export default function CrashGame() {
         return roundedValue;
       });
     }
-
-    console.log("multiplier", multiplier);
   };
   const jumpMultiplier = (increment: boolean) => {
     setMultiplier((prev) => {
@@ -106,7 +103,7 @@ export default function CrashGame() {
   };
 
   const deadline = Math.floor((Date.now() + 30 * 60 * 1000) / 1000).toString();
-  const CRASHAddress = process.env.NEXT_PUBLIC_CRASH_ADDRESS;
+  const CRASHAddress = "0x36291184a593fe7E0A6af87e126A511E4a1fc284";
 
   const ABI = [
     {
@@ -229,7 +226,6 @@ export default function CrashGame() {
   };
 
   const handleSettleBet = async () => {
-    console.log("handleSettleBet");
     if (!CRASHAddress) {
       throw new Error(
         "NEXT_PUBLIC_RACE_ADDRESS environment variable is not set"
@@ -242,7 +238,6 @@ export default function CrashGame() {
     } else {
       setBuyingTicket(true);
       try {
-        console.log("handleSettleBet");
         const response = await MiniKit.commandsAsync.sendTransaction({
           transaction: [
             {
@@ -266,10 +261,9 @@ export default function CrashGame() {
             },
           ],
         });
-        console.log("Transaction sent:", response);
+
         if (response?.finalPayload?.status === "success") {
           setTimeout(async () => {
-            console.log("Run callback");
             callBack();
           }, 3000);
         } else {

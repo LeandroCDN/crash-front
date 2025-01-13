@@ -20,7 +20,7 @@ const Modal: React.FC<ModalProps> = ({
   onClose,
 }) => {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
       {/* Caja principal con borde dinámico */}
       <div
         className={`bg-[#111111] text-white rounded-lg p-6 max-w-md w-full border-2 ${
@@ -41,11 +41,11 @@ const Modal: React.FC<ModalProps> = ({
             Your bet amount: <span className="font-bold">{bet}</span>
           </p>
           <p className="text-lg">
-            Your multiplier: <span className="font-bold">{multiplier}</span>
+            Your multiplier: <span className="font-bold">{multiplier}%</span>
           </p>
           {/* Rocket score con color dinámico */}
           <p className="text-lg">
-            Final rocket score:{" "}
+            Eocket result:{" "}
             <span
               className={`font-bold ${
                 result ? "text-[#00ff00]" : "text-[#ff0000]"

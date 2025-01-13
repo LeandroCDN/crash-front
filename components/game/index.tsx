@@ -431,8 +431,15 @@ export default function CrashGame() {
 
       interval = setInterval(() => {
         setCurrentMultiplier((prev) => {
+          let increment;
+          if (prev < 200) increment = 1;
+          else if (prev < 400) increment = 2;
+          else if (prev < 600) increment = 3;
+          else if (prev < 800) increment = 4;
+          else increment = 5;
+
           const newMultiplier = truncateToTwoDecimals(
-            Math.min(prev + 1, outcome)
+            Math.min(prev + increment, outcome)
           );
 
           // Cambiar estado si el multiplier supera el choice
@@ -457,7 +464,7 @@ export default function CrashGame() {
 
           return newMultiplier;
         });
-      }, 100);
+      }, 75);
     }
 
     return () => {

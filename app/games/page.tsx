@@ -1,11 +1,11 @@
-import { SignIn } from "@/components/SignIn";
+import CrashGame from "@/components/game";
 import StarryBackground from "@/components/StarryBackground";
 
 export default function Home() {
   return (
-    <main className="">
+    <main className=" ">
       <StarryBackground />
-      <SignIn />
+      <CrashGame />
     </main>
   );
 }

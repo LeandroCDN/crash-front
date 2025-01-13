@@ -4,7 +4,7 @@ import "./globals.css";
 import MiniKitProvider from "@/components/minikit-provider";
 import dynamic from "next/dynamic";
 import NextAuthProvider from "@/components/next-auth-provider";
-
+import { massFont } from "./fonts";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -25,15 +25,13 @@ export default function RootLayout({
   );
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <NextAuthProvider>
-          <ErudaProvider>
-            <MiniKitProvider>
-              {children}
-            </MiniKitProvider>
-          </ErudaProvider>
-        </NextAuthProvider>
-      </body>
+      <NextAuthProvider>
+        <ErudaProvider>
+          <MiniKitProvider>
+            <body className={massFont.className}>{children}</body>
+          </MiniKitProvider>
+        </ErudaProvider>
+      </NextAuthProvider>
     </html>
   );
 }

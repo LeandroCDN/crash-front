@@ -45,7 +45,7 @@ const Modal: React.FC<ModalProps> = ({
           </p>
           {/* Rocket score con color dinámico */}
           <p className="text-lg">
-            Eocket result:{" "}
+            Rocket result:{" "}
             <span
               className={`font-bold ${
                 result ? "text-[#00ff00]" : "text-[#ff0000]"

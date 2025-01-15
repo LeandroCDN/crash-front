@@ -9,6 +9,7 @@ import Modal from "./modal";
 import StarryBackground from "@/components/StarryBackground";
 import Image from "next/image";
 import StarryBackgroundFast from "../StarryBackgroundFast";
+import { Addressable } from "ethers";
 interface Bet {
   choice: BigInt; // uint40
   outcome: BigInt; // uint40
@@ -25,10 +26,6 @@ interface Token {
   maxBetAmount: bigint;
   houseEdgeBP: bigint;
 }
-interface betMultiplierLimits {
-  minMultiplier: number;
-  maxMultiplier: number;
-}
 
 export default function CrashGame() {
   const [multiplier, setMultiplier] = useState(2);
@@ -36,12 +33,20 @@ export default function CrashGame() {
   const [currentMultiplier, setCurrentMultiplier] = useState(0.0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userBalance, setUserBalance] = useState<string | null>("0");
-  const [tokenInfo, setTokenInfo] = useState<Token | null>(null);
-  const [multiplierInfo, setMultiplierInfo] = useState<betMultiplierLimits>({
-    minMultiplier: 0.1, // Convertir 0.1 a formato bigint (con decimales si es necesario)
-    maxMultiplier: 99,
-  });
-
+  const wldAddress = "0x2cFc85d8E48F8EAB294be644d9E25C3030863003";
+  const usdcAddress = "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1";
+  const [token, setToken] = useState<string | Addressable>(wldAddress);
+  const usdcColor = "#2775ca";
+  const wldColor = "#00ff00";
+  const [borderColor, setBorderColor] = useState<string | null>(wldColor);
+  const toggleToken = () => {
+    setToken((prevToken) =>
+      prevToken === usdcAddress ? wldAddress : usdcAddress
+    );
+    setBorderColor((prevColor) =>
+      prevColor === usdcColor ? wldColor : usdcColor
+    );
+  };
   const adjustValue = (type: "multiplier" | "token", increment: boolean) => {
     if (type === "multiplier") {
       setMultiplier((prev) => {
@@ -193,9 +198,9 @@ export default function CrashGame() {
   );
   const permitTransfer = {
     permitted: {
-      token: "0x2cFc85d8E48F8EAB294be644d9E25C3030863003",
-      amount: ethers.parseEther(tokenAmount.toString()).toString(),
+      token: token.toString(),
       // amount: ethers.parseEther(tokenAmount.toString()).toString(),
+      amount: "100",
     },
     nonce: Date.now().toString(),
     deadline,
@@ -209,7 +214,7 @@ export default function CrashGame() {
 
   const transferDetails = {
     to: CRASHAddress,
-    requestedAmount: ethers.parseEther(tokenAmount.toString()).toString(),
+    requestedAmount: "100",
     // requestedAmount: ethers.parseEther(tokenAmount.toString()).toString(),
   };
 
@@ -349,36 +354,12 @@ export default function CrashGame() {
 
   const fecthUserBalance = async () => {
     // Instancia del contrato en el frontend
-    const contract = new ethers.Contract(
-      "0x2cFc85d8E48F8EAB294be644d9E25C3030863003",
-      WLD,
-      provider
-    );
+    const contract = new ethers.Contract(token, WLD, provider);
     const wldBalance = await contract.balanceOf(MiniKit.walletAddress);
 
     const wldBalanceInEther = ethers.formatEther(wldBalance);
     const wldBalanceFormatted = parseFloat(wldBalanceInEther).toFixed(1);
     setUserBalance(wldBalanceFormatted.toString());
-  };
-
-  const fetchLimits = async () => {
-    if (!CRASHAddress) {
-      throw new Error(
-        "NEXT_PUBLIC_MINE_ADDRESS environment variable is not set"
-      );
-    }
-    // Instancia del contrato en el frontend
-    const contract = new ethers.Contract(CRASHAddress, ABIcrash, provider);
-    const tokenInfo = await contract.supportedTokenInfo(
-      "0x2cFc85d8E48F8EAB294be644d9E25C3030863003"
-    );
-    const FormatToken: Token = {
-      minBetAmount: BigInt(1),
-      maxBetAmount: tokenInfo.maxBetAmount,
-      houseEdgeBP: tokenInfo.houseEdgeBP,
-    };
-
-    setTokenInfo(FormatToken);
   };
 
   const fetchPendingId = async () => {
@@ -395,7 +376,6 @@ export default function CrashGame() {
 
   useEffect(() => {
     fecthUserBalance();
-    fetchLimits();
     fetchPendingId();
   }, []);
 
@@ -479,7 +459,9 @@ export default function CrashGame() {
                 <h2 className="text-sm font-bold ">ROCKET CRASH </h2>
                 {/* <h2 className="text-2xl font-bold ">CRASH</h2> */}
               </div>
-              <div className="text-sm font-mono border-[#00ff00] border-2 px-2 rounded-lg">
+              <div
+                className={`text-sm font-mono border-[${borderColor}] border-2 px-2 rounded-lg`}
+              >
                 $WLD {userBalance}
               </div>
             </div>
@@ -515,7 +497,7 @@ export default function CrashGame() {
               </div>
             </div>
             <div
-              className={`text-center text-5xl font-bold border-[#00ff00] border-2 px-2 rounded-full py-3 ${
+              className={`text-center text-5xl font-bold border-[${borderColor}] border-2 px-2 rounded-full py-3 ${
                 lose
                   ? "text-[#ff0000]" // Cambiar a rojo si perdió
                   : isExceeded
@@ -534,14 +516,14 @@ export default function CrashGame() {
               {/* Decrease Amount */}
               <div className="flex flex-col items-center align-top ">
                 <button
-                  className="border border-[#00ff00] hover:bg-[#00ff00] text-2xl text-center bg-gray-800 hover:text-black transition-colors w-16 h-8 mb-2 flex items-center justify-center rounded-lg"
+                  className={`border border-[${borderColor}] hover:bg-[#00ff00] text-2xl text-center bg-gray-800 hover:text-black transition-colors w-16 h-8 mb-2 flex items-center justify-center rounded-lg`}
                   onClick={() => adjustValue("multiplier", false)}
                 >
                   -
                 </button>
                 <button
                   onClick={() => jumpMultiplier(false)}
-                  className="text-xs border border-[#00ff00] hover:bg-[#00ff00] h-8  w-16 px-4 pl-3 py-1 rounded-lg"
+                  className={`text-xs border border-[${borderColor}] hover:bg-[#00ff00] h-8  w-16 px-4 pl-3 py-1 rounded-lg`}
                 >
                   -10x
                 </button>
@@ -553,20 +535,20 @@ export default function CrashGame() {
                 value={`${multiplier}x`}
                 onChange={(e) => setMultiplier(Number(e.target.value))}
                 readOnly
-                className="bg-transparent border border-[#00ff00] text-center text-4xl w-[55%] pl-1 rounded-lg "
+                className={`bg-transparent border border-[${borderColor}] text-center text-4xl w-[55%] pl-1 rounded-lg `}
               />
 
               {/* Increase Amount */}
               <div className="flex flex-col items-center">
                 <button
-                  className="border border-[#00ff00] hover:bg-[#00ff00] text-2xl text-center bg-gray-800 hover:text-black transition-colors w-16 h-8  mb-2 flex items-center justify-center rounded-lg"
+                  className={`border border-[${borderColor}] hover:bg-[#00ff00] text-2xl text-center bg-gray-800 hover:text-black transition-colors w-16 h-8  mb-2 flex items-center justify-center rounded-lg`}
                   onClick={() => adjustValue("multiplier", true)}
                 >
                   +
                 </button>
                 <button
                   onClick={() => jumpMultiplier(true)}
-                  className="text-xs border border-[#00ff00] hover:bg-[#00ff00] px-2 w-16 h-8  py-1 rounded-lg"
+                  className={`text-xs border border-[${borderColor}] hover:bg-[#00ff00] px-2 w-16 h-8  py-1 rounded-lg`}
                 >
                   +10x
                 </button>
@@ -576,19 +558,29 @@ export default function CrashGame() {
 
           {/* Amount Section */}
           <div className="text-white">
-            <p className="text-center text-lg mb-2">$WLD Amount</p>
+            <div className="flex flex-row justify-center">
+              <p className="text-center text-lg mb-2">
+                Amount in{" "}
+                <button
+                  onClick={toggleToken}
+                  className={`text-sm  border border-[${borderColor}] px-2 py-1 rounded-lg`}
+                >
+                  {token === wldAddress ? "WLD" : "USDC"}
+                </button>
+              </p>
+            </div>
             <div className="flex flex-row  justify-between ">
               {/* Decrease Amount */}
               <div className="flex flex-col items-center align-top ">
                 <button
-                  className="border border-[#00ff00] hover:bg-[#00ff00] text-2xl bg-gray-800 text-center hover:text-black transition-colors w-16 h-8 mb-2 flex items-center justify-center rounded-lg"
+                  className={`border border-[${borderColor}] hover:bg-[#00ff00] text-2xl bg-gray-800 text-center hover:text-black transition-colors w-16 h-8 mb-2 flex items-center justify-center rounded-lg`}
                   onClick={() => adjustValue("token", false)}
                 >
                   -
                 </button>
                 <button
                   onClick={() => setTokenAmount(0.1)}
-                  className="text-xs border border-[#00ff00] hover:bg-[#00ff00] h-8  w-16 px-4 pl-3 py-1 rounded-lg"
+                  className={`text-xs border border-[${borderColor}] hover:bg-[#00ff00] h-8  w-16 px-4 pl-3 py-1 rounded-lg`}
                 >
                   MIN
                 </button>
@@ -600,20 +592,20 @@ export default function CrashGame() {
                 value={tokenAmount}
                 onChange={(e) => setTokenAmount(Number(e.target.value))}
                 readOnly
-                className="bg-transparent border border-[#00ff00] text-center text-4xl w-[55%] pl-1 rounded-lg "
+                className={`bg-transparent border border-[${borderColor}] text-center text-4xl w-[55%] pl-1 rounded-lg `}
               />
 
               {/* Increase Amount */}
               <div className="flex flex-col items-center">
                 <button
-                  className="border border-[#00ff00] hover:bg-[#00ff00] bg-gray-800 text-2xl text-center hover:text-black transition-colors w-16 h-8  mb-2 flex items-center justify-center rounded-lg"
+                  className={`border border-[${borderColor}] hover:bg-[#00ff00] bg-gray-800 text-2xl text-center hover:text-black transition-colors w-16 h-8  mb-2 flex items-center justify-center rounded-lg`}
                   onClick={() => adjustValue("token", true)}
                 >
                   +
                 </button>
                 <button
                   onClick={() => setTokenAmount(1)}
-                  className="text-xs border border-[#00ff00] hover:bg-[#00ff00] px-2 w-16 h-8  py-1 rounded-lg"
+                  className={`text-xs border border-[${borderColor}] hover:bg-[#00ff00] px-2 w-16 h-8  py-1 rounded-lg`}
                 >
                   MAX
                 </button>

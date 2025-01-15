@@ -28,11 +28,13 @@ interface Token {
 }
 
 export default function CrashGame() {
-  const [multiplier, setMultiplier] = useState(2);
+  const [multiplier, setMultiplier] = useState(5);
   const [tokenAmount, setTokenAmount] = useState(1);
   const [currentMultiplier, setCurrentMultiplier] = useState(0.0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userBalance, setUserBalance] = useState<string | null>("0");
+  const [userBalanceWLD, setUserBalanceWLD] = useState<string | null>("0");
+  const [userBalanceUSDC, setUserBalanceUSDC] = useState<string | null>("0");
   const wldAddress = "0x2cFc85d8E48F8EAB294be644d9E25C3030863003";
   const usdcAddress = "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1";
   const [token, setToken] = useState<string | Addressable>(wldAddress);
@@ -199,8 +201,11 @@ export default function CrashGame() {
   const permitTransfer = {
     permitted: {
       token: token.toString(),
-      // amount: ethers.parseEther(tokenAmount.toString()).toString(),
-      amount: "100",
+      amount:
+        token === wldAddress
+          ? ethers.parseEther(tokenAmount.toString()).toString()
+          : (tokenAmount * 10 ** 6).toString(),
+      // amount: "100",
     },
     nonce: Date.now().toString(),
     deadline,
@@ -214,8 +219,11 @@ export default function CrashGame() {
 
   const transferDetails = {
     to: CRASHAddress,
-    requestedAmount: "100",
-    // requestedAmount: ethers.parseEther(tokenAmount.toString()).toString(),
+    // requestedAmount: "100",
+    requestedAmount:
+      token === wldAddress
+        ? ethers.parseEther(tokenAmount.toString()).toString()
+        : (tokenAmount * 10 ** 6).toString(),
   };
 
   const transferDetailsArgsForm = [
@@ -346,6 +354,7 @@ export default function CrashGame() {
 
       setRocketLaunching(false); // Detener cualquier animación o estado de carga
       setFlying(true);
+      fecthUserBalance();
     } catch (error) {
       console.error("Error al ejecutar carrera:", error);
       setRocketLaunching(false); // Manejo del error en la UI
@@ -354,12 +363,18 @@ export default function CrashGame() {
 
   const fecthUserBalance = async () => {
     // Instancia del contrato en el frontend
-    const contract = new ethers.Contract(token, WLD, provider);
+    const contract = new ethers.Contract(wldAddress, WLD, provider);
     const wldBalance = await contract.balanceOf(MiniKit.walletAddress);
-
     const wldBalanceInEther = ethers.formatEther(wldBalance);
-    const wldBalanceFormatted = parseFloat(wldBalanceInEther).toFixed(1);
-    setUserBalance(wldBalanceFormatted.toString());
+    const wldBalanceFormatted = parseFloat(wldBalanceInEther).toFixed(2);
+    setUserBalanceWLD(wldBalanceFormatted.toString());
+
+    const contractUSDC = new ethers.Contract(usdcAddress, WLD, provider);
+    const usdcBalance = await contractUSDC.balanceOf(MiniKit.walletAddress);
+    const usdcBalanceFormatted = (parseFloat(usdcBalance) / 10 ** 6).toFixed(2);
+
+    setUserBalanceWLD(wldBalanceFormatted.toString());
+    setUserBalanceUSDC(usdcBalanceFormatted.toString());
   };
 
   const fetchPendingId = async () => {
@@ -410,6 +425,8 @@ export default function CrashGame() {
           else if (prev < 400) increment = 2;
           else if (prev < 600) increment = 3;
           else if (prev < 800) increment = 4;
+          else if (prev < 1000) increment = 6;
+          else if (prev < 1200) increment = 12;
           else increment = 5;
 
           const newMultiplier = truncateToTwoDecimals(
@@ -462,14 +479,18 @@ export default function CrashGame() {
               <div
                 className={`text-sm font-mono border-[${borderColor}] border-2 px-2 rounded-lg`}
               >
-                $WLD {userBalance}
+                {token === wldAddress
+                  ? `$WLD ${userBalanceWLD}`
+                  : `$USDC ${userBalanceUSDC}`}
               </div>
             </div>
 
             {/* Status Display */}
             <div className="text-2xl font-bold f">
               <Image
-                src="/Rocket.webp"
+                src={
+                  token === wldAddress ? "/Rocket.webp" : "/Blue-Rocket.webp"
+                }
                 alt="Rocket"
                 width={200}
                 height={200}
@@ -516,14 +537,14 @@ export default function CrashGame() {
               {/* Decrease Amount */}
               <div className="flex flex-col items-center align-top ">
                 <button
-                  className={`border border-[${borderColor}] hover:bg-[#00ff00] text-2xl text-center bg-gray-800 hover:text-black transition-colors w-16 h-8 mb-2 flex items-center justify-center rounded-lg`}
+                  className={`border border-[${borderColor}] hover:bg-[${borderColor}] text-2xl text-center bg-gray-800 hover:text-black transition-colors w-16 h-8 mb-2 flex items-center justify-center rounded-lg`}
                   onClick={() => adjustValue("multiplier", false)}
                 >
                   -
                 </button>
                 <button
                   onClick={() => jumpMultiplier(false)}
-                  className={`text-xs border border-[${borderColor}] hover:bg-[#00ff00] h-8  w-16 px-4 pl-3 py-1 rounded-lg`}
+                  className={`text-xs border border-[${borderColor}] hover:bg-[${borderColor}] h-8  w-16 px-4 pl-3 py-1 rounded-lg`}
                 >
                   -10x
                 </button>
@@ -541,14 +562,14 @@ export default function CrashGame() {
               {/* Increase Amount */}
               <div className="flex flex-col items-center">
                 <button
-                  className={`border border-[${borderColor}] hover:bg-[#00ff00] text-2xl text-center bg-gray-800 hover:text-black transition-colors w-16 h-8  mb-2 flex items-center justify-center rounded-lg`}
+                  className={`border border-[${borderColor}] hover:bg-[${borderColor}] text-2xl text-center bg-gray-800 hover:text-black transition-colors w-16 h-8  mb-2 flex items-center justify-center rounded-lg`}
                   onClick={() => adjustValue("multiplier", true)}
                 >
                   +
                 </button>
                 <button
                   onClick={() => jumpMultiplier(true)}
-                  className={`text-xs border border-[${borderColor}] hover:bg-[#00ff00] px-2 w-16 h-8  py-1 rounded-lg`}
+                  className={`text-xs border border-[${borderColor}] hover:bg-[${borderColor}] px-2 w-16 h-8  py-1 rounded-lg`}
                 >
                   +10x
                 </button>
@@ -573,14 +594,14 @@ export default function CrashGame() {
               {/* Decrease Amount */}
               <div className="flex flex-col items-center align-top ">
                 <button
-                  className={`border border-[${borderColor}] hover:bg-[#00ff00] text-2xl bg-gray-800 text-center hover:text-black transition-colors w-16 h-8 mb-2 flex items-center justify-center rounded-lg`}
+                  className={`border border-[${borderColor}] hover:bg-[${borderColor}] text-2xl bg-gray-800 text-center hover:text-black transition-colors w-16 h-8 mb-2 flex items-center justify-center rounded-lg`}
                   onClick={() => adjustValue("token", false)}
                 >
                   -
                 </button>
                 <button
                   onClick={() => setTokenAmount(0.1)}
-                  className={`text-xs border border-[${borderColor}] hover:bg-[#00ff00] h-8  w-16 px-4 pl-3 py-1 rounded-lg`}
+                  className={`text-xs border border-[${borderColor}] hover:bg-[${borderColor}] h-8  w-16 px-4 pl-3 py-1 rounded-lg`}
                 >
                   MIN
                 </button>
@@ -598,14 +619,14 @@ export default function CrashGame() {
               {/* Increase Amount */}
               <div className="flex flex-col items-center">
                 <button
-                  className={`border border-[${borderColor}] hover:bg-[#00ff00] bg-gray-800 text-2xl text-center hover:text-black transition-colors w-16 h-8  mb-2 flex items-center justify-center rounded-lg`}
+                  className={`border border-[${borderColor}] hover:bg-[${borderColor}] bg-gray-800 text-2xl text-center hover:text-black transition-colors w-16 h-8  mb-2 flex items-center justify-center rounded-lg`}
                   onClick={() => adjustValue("token", true)}
                 >
                   +
                 </button>
                 <button
                   onClick={() => setTokenAmount(1)}
-                  className={`text-xs border border-[${borderColor}] hover:bg-[#00ff00] px-2 w-16 h-8  py-1 rounded-lg`}
+                  className={`text-xs border border-[${borderColor}] hover:bg-[${borderColor}] px-2 w-16 h-8  py-1 rounded-lg`}
                 >
                   MAX
                 </button>
@@ -627,7 +648,9 @@ export default function CrashGame() {
               title={lose ? "YOU LOSE" : isExceeded ? "You Win" : "error"}
               bet={
                 currentBet
-                  ? ethers.formatEther(currentBet.amount.toString())
+                  ? token === wldAddress
+                    ? ethers.formatEther(currentBet.amount.toString())
+                    : (Number(currentBet.amount) / 10 ** 6).toString()
                   : "0"
               }
               multiplier={currentBet ? `${currentBet.choice.toString()}` : "0"}
@@ -636,7 +659,11 @@ export default function CrashGame() {
                 lose
                   ? "Bad Luck"
                   : isExceeded
-                  ? `You Win ${ethers.formatEther(currentBet?.winAmount || 0)}`
+                  ? token === wldAddress
+                    ? `You Win: ` +
+                      `${ethers.formatEther(currentBet?.winAmount || 0)}`
+                    : `You Win: ` +
+                      `  ${Number(currentBet?.winAmount || 0) / 10 ** 6}`
                   : "error"
               }
               result={isExceeded}

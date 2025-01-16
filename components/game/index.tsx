@@ -82,7 +82,7 @@ export default function CrashGame() {
 
         // Ensure value stays within bounds
         if (roundedValue <= 0) return 0.1;
-        if (roundedValue > 1) return 1;
+        if (roundedValue > 2) return 2;
 
         return roundedValue;
       });
@@ -625,7 +625,7 @@ export default function CrashGame() {
                   +
                 </button>
                 <button
-                  onClick={() => setTokenAmount(1)}
+                  onClick={() => setTokenAmount(2)}
                   className={`text-xs border border-[${borderColor}] hover:bg-[${borderColor}] px-2 w-16 h-8  py-1 rounded-lg`}
                 >
                   MAX

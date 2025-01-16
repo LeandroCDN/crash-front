@@ -31,7 +31,7 @@ interface betMultiplierLimits {
 }
 
 export default function CrashGame() {
-  const [multiplier, setMultiplier] = useState(2);
+  const [multiplier, setMultiplier] = useState(5);
   const [tokenAmount, setTokenAmount] = useState(1);
   const [currentMultiplier, setCurrentMultiplier] = useState(0.0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,7 +75,7 @@ export default function CrashGame() {
 
         // Ensure value stays within bounds
         if (roundedValue <= 0) return 0.1;
-        if (roundedValue > 1) return 1;
+        if (roundedValue > 2) return 2;
 
         return roundedValue;
       });
@@ -612,7 +612,7 @@ export default function CrashGame() {
                   +
                 </button>
                 <button
-                  onClick={() => setTokenAmount(1)}
+                  onClick={() => setTokenAmount(2)}
                   className="text-xs border border-[#00ff00] hover:bg-[#00ff00] px-2 w-16 h-8  py-1 rounded-lg"
                 >
                   MAX

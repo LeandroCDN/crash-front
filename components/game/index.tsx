@@ -37,9 +37,7 @@ export default function CrashGame() {
   const [userBalanceUSDC, setUserBalanceUSDC] = useState<string | null>("0");
   const wldAddress = "0x2cFc85d8E48F8EAB294be644d9E25C3030863003";
   const usdcAddress = "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1";
-  const [token, setToken] = useState<string | Addressable>(
-    "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1"
-  );
+  const [token, setToken] = useState<string | Addressable>(wldAddress);
   const usdcColor = "#2775ca";
   const wldColor = "#00ff00";
   const [borderColor, setBorderColor] = useState<string | null>(wldColor);
@@ -202,7 +200,7 @@ export default function CrashGame() {
   );
   const permitTransfer = {
     permitted: {
-      token: "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1",
+      token: token.toString(),
       amount:
         token === wldAddress
           ? ethers.parseEther(tokenAmount.toString()).toString()
@@ -252,43 +250,44 @@ export default function CrashGame() {
       launchGame(pendingId);
     } else {
       setBuyingTicket(true);
-      // try {
-      console.log("Calling send transaction...");
-      console.log("permitTransferArgsForm", permitTransferArgsForm);
-      const response = await MiniKit.commandsAsync.sendTransaction({
-        transaction: [
-          {
-            address: CRASHAddress, // Contract address
-            abi: ABI, // ABI of the function
-            functionName: "placeBet", // Name of the function
-            args: [
-              multiplier == 1.1
-                ? (110).toString()
-                : (multiplier * 100).toString(),
-              permitTransferArgsForm,
-              transferDetailsArgsForm,
-              "PERMIT2_SIGNATURE_PLACEHOLDER_0",
-            ],
-          },
-        ],
-        permit2: [
-          {
-            ...permitTransfer,
-            spender: CRASHAddress,
-          },
-        ],
-      });
-      console.log("Transaction response:", response);
-      if (response?.finalPayload?.status === "success") {
-        setTimeout(async () => {
-          callBack();
-        }, 3000);
-      } else {
-        setBuyingTicket(false);
+      try {
+        console.log("Sending transaction...");
+        console.log("permitTransferArgsForm.", permitTransferArgsForm);
+        console.log("transferDetailsArgsForm.", transferDetailsArgsForm);
+        const response = await MiniKit.commandsAsync.sendTransaction({
+          transaction: [
+            {
+              address: CRASHAddress, // Contract address
+              abi: ABI, // ABI of the function
+              functionName: "placeBet", // Name of the function
+              args: [
+                multiplier == 1.1
+                  ? (110).toString()
+                  : (multiplier * 100).toString(),
+                permitTransferArgsForm,
+                transferDetailsArgsForm,
+                "PERMIT2_SIGNATURE_PLACEHOLDER_0",
+              ],
+            },
+          ],
+          permit2: [
+            {
+              ...permitTransfer,
+              spender: CRASHAddress,
+            },
+          ],
+        });
+        console.log("Response:", response);
+        if (response?.finalPayload?.status === "success") {
+          setTimeout(async () => {
+            callBack();
+          }, 3000);
+        } else {
+          setBuyingTicket(false);
+        }
+      } catch (error) {
+        console.error("Error executing transaction:", error);
       }
-      // } catch (error) {
-      //   console.error("Error executing transaction:", error);
-      // }
     }
   };
 

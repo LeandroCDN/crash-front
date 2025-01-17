@@ -200,7 +200,10 @@ export default function CrashGame() {
   );
   const permitTransfer = {
     permitted: {
-      token: token.toString(),
+      token:
+        token === wldAddress
+          ? wldAddress
+          : "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1",
       amount:
         token === wldAddress
           ? ethers.parseEther(tokenAmount.toString()).toString()
@@ -252,6 +255,7 @@ export default function CrashGame() {
       setBuyingTicket(true);
       // try {
       console.log("Calling send transaction...");
+      console.log("permitTransferArgsForm", permitTransferArgsForm);
       const response = await MiniKit.commandsAsync.sendTransaction({
         transaction: [
           {

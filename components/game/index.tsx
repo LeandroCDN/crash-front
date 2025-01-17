@@ -251,6 +251,7 @@ export default function CrashGame() {
     } else {
       setBuyingTicket(true);
       try {
+        console.log("Calling send transaction...");
         const response = await MiniKit.commandsAsync.sendTransaction({
           transaction: [
             {

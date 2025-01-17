@@ -250,42 +250,42 @@ export default function CrashGame() {
       launchGame(pendingId);
     } else {
       setBuyingTicket(true);
-      try {
-        console.log("Calling send transaction...");
-        const response = await MiniKit.commandsAsync.sendTransaction({
-          transaction: [
-            {
-              address: CRASHAddress, // Contract address
-              abi: ABI, // ABI of the function
-              functionName: "placeBet", // Name of the function
-              args: [
-                multiplier == 1.1
-                  ? (110).toString()
-                  : (multiplier * 100).toString(),
-                permitTransferArgsForm,
-                transferDetailsArgsForm,
-                "PERMIT2_SIGNATURE_PLACEHOLDER_0",
-              ],
-            },
-          ],
-          permit2: [
-            {
-              ...permitTransfer,
-              spender: CRASHAddress,
-            },
-          ],
-        });
-
-        if (response?.finalPayload?.status === "success") {
-          setTimeout(async () => {
-            callBack();
-          }, 3000);
-        } else {
-          setBuyingTicket(false);
-        }
-      } catch (error) {
-        console.error("Error executing transaction:", error);
+      // try {
+      console.log("Calling send transaction...");
+      const response = await MiniKit.commandsAsync.sendTransaction({
+        transaction: [
+          {
+            address: CRASHAddress, // Contract address
+            abi: ABI, // ABI of the function
+            functionName: "placeBet", // Name of the function
+            args: [
+              multiplier == 1.1
+                ? (110).toString()
+                : (multiplier * 100).toString(),
+              permitTransferArgsForm,
+              transferDetailsArgsForm,
+              "PERMIT2_SIGNATURE_PLACEHOLDER_0",
+            ],
+          },
+        ],
+        permit2: [
+          {
+            ...permitTransfer,
+            spender: CRASHAddress,
+          },
+        ],
+      });
+      console.log("Transaction response:", response);
+      if (response?.finalPayload?.status === "success") {
+        setTimeout(async () => {
+          callBack();
+        }, 3000);
+      } else {
+        setBuyingTicket(false);
       }
+      // } catch (error) {
+      //   console.error("Error executing transaction:", error);
+      // }
     }
   };
 

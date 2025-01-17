@@ -46,7 +46,7 @@ export default function CrashGame() {
       prevToken === usdcAddress ? wldAddress : usdcAddress
     );
     setBorderColor((prevColor) =>
-      prevColor === usdcColor ? wldColor : usdcColor
+      prevColor === usdcColor ? wldColor : "#2775ca"
     );
   };
   const adjustValue = (type: "multiplier" | "token", increment: boolean) => {
@@ -477,7 +477,11 @@ export default function CrashGame() {
                 {/* <h2 className="text-2xl font-bold ">CRASH</h2> */}
               </div>
               <div
-                className={`text-sm font-mono border-[${borderColor}] border-2 px-2 rounded-lg`}
+                className={`text-sm font-mono border-2 px-2 rounded-lg ${
+                  borderColor === "#00ff00"
+                    ? "border-[#00ff00]"
+                    : "border-[#2775ca]"
+                }`}
               >
                 {token === wldAddress
                   ? `$WLD ${userBalanceWLD}`
@@ -488,9 +492,7 @@ export default function CrashGame() {
             {/* Status Display */}
             <div className="text-2xl font-bold f">
               <Image
-                src={
-                  token === wldAddress ? "/Rocket.webp" : "/Blue-Rocket.webp"
-                }
+                src={token === wldAddress ? "/Rocket.webp" : "/Bluerocket.webp"}
                 alt="Rocket"
                 width={200}
                 height={200}

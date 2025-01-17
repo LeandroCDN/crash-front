@@ -29,7 +29,7 @@ interface Token {
 
 export default function CrashGame() {
   const [multiplier, setMultiplier] = useState(5);
-  const [tokenAmount, setTokenAmount] = useState(1);
+  const [tokenAmount, setTokenAmount] = useState(1.5);
   const [currentMultiplier, setCurrentMultiplier] = useState(0.0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userBalance, setUserBalance] = useState<string | null>("0");

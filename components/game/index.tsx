@@ -586,7 +586,7 @@ export default function CrashGame() {
                   onClick={toggleToken}
                   className={`text-sm  border border-[${borderColor}] px-2 py-1 rounded-lg`}
                 >
-                  {token === wldAddress ? "WLD" : "USDC"}
+                  {token === wldAddress ? "WLD ⇋" : "USDC ⇋"}
                 </button>
               </p>
             </div>

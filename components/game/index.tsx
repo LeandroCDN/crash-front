@@ -477,7 +477,7 @@ export default function CrashGame() {
                 {/* <h2 className="text-2xl font-bold ">CRASH</h2> */}
               </div>
               <div
-                className={`text-sm font-mono border-[${borderColor}] border-2 px-2 rounded-lg`}
+                className={`text-sm font-mono border-[#2775ca] border-2 px-2 rounded-lg`}
               >
                 {token === wldAddress
                   ? `$WLD ${userBalanceWLD}`

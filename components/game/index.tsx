@@ -37,7 +37,9 @@ export default function CrashGame() {
   const [userBalanceUSDC, setUserBalanceUSDC] = useState<string | null>("0");
   const wldAddress = "0x2cFc85d8E48F8EAB294be644d9E25C3030863003";
   const usdcAddress = "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1";
-  const [token, setToken] = useState<string | Addressable>(wldAddress);
+  const [token, setToken] = useState<string | Addressable>(
+    "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1"
+  );
   const usdcColor = "#2775ca";
   const wldColor = "#00ff00";
   const [borderColor, setBorderColor] = useState<string | null>(wldColor);
@@ -200,10 +202,7 @@ export default function CrashGame() {
   );
   const permitTransfer = {
     permitted: {
-      token:
-        token === wldAddress
-          ? wldAddress
-          : "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1",
+      token: "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1",
       amount:
         token === wldAddress
           ? ethers.parseEther(tokenAmount.toString()).toString()

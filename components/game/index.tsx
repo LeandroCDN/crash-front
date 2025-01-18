@@ -652,7 +652,7 @@ export default function CrashGame() {
             >
               {token === usdcAddress
                 ? "Coming Soon"
-                : userPendgingId !== 0
+                : userPendgingId != 0
                 ? "Finalize Last Bet"
                 : "LAUNCH!"}
             </button>

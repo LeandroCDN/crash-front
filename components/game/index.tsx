@@ -646,9 +646,7 @@ export default function CrashGame() {
               className={`w-full py-3 text-2xl font-bold bg-[#ffe500] text-black rounded-md hover:bg-opacity-90 transition ${
                 token === usdcAddress ? "opacity-50 cursor-not-allowed" : ""
               }`}
-              disabled={
-                tokenAmount === 0 || multiplier === 0 || token === usdcAddress
-              }
+              disabled={tokenAmount === 0 || multiplier === 0}
             >
               {token === usdcAddress
                 ? "Coming Soon"

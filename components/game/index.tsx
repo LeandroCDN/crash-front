@@ -589,7 +589,7 @@ export default function CrashGame() {
                 Amount in{" "}
                 <button
                   onClick={toggleToken}
-                  className={`text-sm  border border-[${borderColor}] px-2 py-1 rounded-lg`}
+                  className={`text-sm border border-[#ffe500] px-2 py-1 rounded-lg animate-pulse`}
                 >
                   {token === wldAddress ? "WLD ⇋" : "USDC ⇋"}
                 </button>
@@ -656,7 +656,7 @@ export default function CrashGame() {
                 currentBet
                   ? token === wldAddress
                     ? ethers.formatEther(currentBet.amount.toString())
-                    : (Number(currentBet.amount) / 10000).toString()
+                    : (Number(currentBet.amount) / 1000000).toString()
                   : "0"
               }
               multiplier={currentBet ? `${currentBet.choice.toString()}` : "0"}
@@ -669,7 +669,7 @@ export default function CrashGame() {
                     ? `You Win: ` +
                       `${ethers.formatEther(currentBet?.winAmount || 0)} WLD`
                     : `You Win: ` +
-                      `  ${Number(currentBet?.winAmount || 0) / 100000} USDC`
+                      `  ${Number(currentBet?.winAmount || 0) / 1000000} USDC`
                   : "error"
               }
               result={isExceeded}

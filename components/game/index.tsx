@@ -81,7 +81,7 @@ export default function CrashGame() {
         const roundedValue = Math.round(newValue * 10) / 10;
 
         // Ensure value stays within bounds
-        if (roundedValue <= 0) return 0.1;
+        if (roundedValue <= 0) return token === wldAddress ? 0.1 : 0.25;
         if (roundedValue > 2) return 2;
 
         return roundedValue;
@@ -643,16 +643,10 @@ export default function CrashGame() {
           <div className="text-center">
             <button
               onClick={handleSettleBet}
-              className={`w-full py-3 text-2xl font-bold bg-[#ffe500] text-black rounded-md hover:bg-opacity-90 transition ${
-                token === usdcAddress ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`w-full py-3 text-2xl font-bold bg-[#ffe500] text-black rounded-md hover:bg-opacity-90 transition `}
               disabled={tokenAmount === 0 || multiplier === 0}
             >
-              {token === usdcAddress
-                ? "Coming Soon"
-                : userPendgingId != 0
-                ? "Finalize Last Bet"
-                : "LAUNCH!"}
+              {userPendgingId != 0 ? "Finalize Last Bet" : "LAUNCH!"}
             </button>
           </div>
           {isModalOpen && (
@@ -662,7 +656,7 @@ export default function CrashGame() {
                 currentBet
                   ? token === wldAddress
                     ? ethers.formatEther(currentBet.amount.toString())
-                    : (Number(currentBet.amount) / 10 ** 6).toString()
+                    : (Number(currentBet.amount) / 10000).toString()
                   : "0"
               }
               multiplier={currentBet ? `${currentBet.choice.toString()}` : "0"}
@@ -673,9 +667,9 @@ export default function CrashGame() {
                   : isExceeded
                   ? token === wldAddress
                     ? `You Win: ` +
-                      `${ethers.formatEther(currentBet?.winAmount || 0)}`
+                      `${ethers.formatEther(currentBet?.winAmount || 0)} WLD`
                     : `You Win: ` +
-                      `  ${Number(currentBet?.winAmount || 0) / 10 ** 6}`
+                      `  ${Number(currentBet?.winAmount || 0) / 100000} USDC`
                   : "error"
               }
               result={isExceeded}

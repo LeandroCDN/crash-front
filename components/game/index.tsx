@@ -81,7 +81,8 @@ export default function CrashGame() {
         const roundedValue = Math.round(newValue * 10) / 10;
 
         // Ensure value stays within bounds
-        if (roundedValue <= 0) return token === wldAddress ? 0.1 : 0.25;
+        if (roundedValue <= 0 && token === wldAddress) return 0.1;
+        if (roundedValue <= 0.25 && token === usdcAddress) return 0.25;
         if (roundedValue > 2) return 2;
 
         return roundedValue;

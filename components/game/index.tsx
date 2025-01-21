@@ -48,6 +48,7 @@ export default function CrashGame() {
     setBorderColor((prevColor) =>
       prevColor === usdcColor ? wldColor : "#2775ca"
     );
+    setTokenAmount(1.5);
   };
   const adjustValue = (type: "multiplier" | "token", increment: boolean) => {
     if (type === "multiplier") {
@@ -606,7 +607,11 @@ export default function CrashGame() {
                   -
                 </button>
                 <button
-                  onClick={() => setTokenAmount(0.1)}
+                  onClick={() =>
+                    token === wldAddress
+                      ? setTokenAmount(0.1)
+                      : setTokenAmount(0.25)
+                  }
                   className={`text-xs border border-[${borderColor}] hover:bg-[${borderColor}] h-8  w-16 px-4 pl-3 py-1 rounded-lg`}
                 >
                   MIN

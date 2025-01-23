@@ -192,6 +192,7 @@ export default function CrashGame() {
   const [isExceeded, setIsExceeded] = useState(false);
   const [lose, setLose] = useState(false);
   const [userPendgingId, setUserPendingId] = useState(0);
+  const [isPlaing, setIsPlaing] = useState(false);
   const provider = new ethers.JsonRpcProvider(
     "https://worldchain-mainnet.g.alchemy.com/public"
   );
@@ -247,6 +248,7 @@ export default function CrashGame() {
       );
     }
     restartGame();
+    setIsPlaing(true);
     const pendingId = await contract.pendingIdsPerPlayer(MiniKit.walletAddress);
     if (pendingId != 0) {
       launchGame(pendingId);
@@ -286,6 +288,7 @@ export default function CrashGame() {
           }, 3000);
         } else {
           setBuyingTicket(false);
+          setIsPlaing(false);
         }
       } catch (error) {
         console.error("Error executing transaction:", error);
@@ -294,6 +297,7 @@ export default function CrashGame() {
   };
 
   const callBack = () => {
+    setIsPlaing(true);
     console.log("Callin back");
     setBuyingTicket(false); // Desactivamos el overlay
     setRocketLaunching(true);
@@ -311,6 +315,7 @@ export default function CrashGame() {
 
   const launchGame = async (pendingId: any) => {
     setRocketLaunching(true);
+    setIsPlaing(true);
     console.log("Calling back...");
     try {
       if (!CRASHAddress) {
@@ -359,6 +364,7 @@ export default function CrashGame() {
 
       setRocketLaunching(false); // Detener cualquier animación o estado de carga
       setFlying(true);
+      setIsPlaing(false);
       fecthUserBalance();
     } catch (error) {
       console.error("Error al ejecutar carrera:", error);
@@ -649,10 +655,16 @@ export default function CrashGame() {
           <div className="text-center">
             <button
               onClick={handleSettleBet}
-              className={`w-full py-3 text-2xl font-bold bg-[#ffe500] text-black rounded-md hover:bg-opacity-90 transition `}
-              disabled={tokenAmount === 0 || multiplier === 0}
+              className={`w-full py-3 text-2xl font-bold bg-[#ffe500] text-black rounded-md hover:bg-opacity-90 transition ${
+                isPlaing ? "opacity-25" : ""
+              } `}
+              disabled={tokenAmount === 0 || multiplier === 0 || isPlaing}
             >
-              {userPendgingId != 0 ? "Finalize Last Bet" : "LAUNCH!"}
+              {isPlaing
+                ? "WAIT FOR ROCKET..."
+                : userPendgingId != 0
+                ? "Finalize Last Bet"
+                : "LAUNCH!"}
             </button>
           </div>
           {isModalOpen && (

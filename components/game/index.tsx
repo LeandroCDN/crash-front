@@ -423,8 +423,13 @@ export default function CrashGame() {
     }
 
     if (flying && currentBet) {
-      const outcome = Number(currentBet.outcome);
+      let outcome = Number(currentBet.outcome);
       const choice = Number(currentBet.choice);
+
+      if (outcome === 0) {
+        //random 101 - 108
+        outcome = Math.floor(Math.random() * 8) + 101;
+      }
 
       // Acelera rápidamente el multiplier cuando está volando
       if (interval) clearInterval(interval);
@@ -656,7 +661,7 @@ export default function CrashGame() {
             <button
               onClick={handleSettleBet}
               className={`w-full py-3 text-2xl font-bold bg-[#ffe500] text-black rounded-md hover:bg-opacity-90 transition ${
-                isPlaing ? "opacity-25" : ""
+                isPlaing ? "opacity-25" : "text-xl"
               } `}
               disabled={tokenAmount === 0 || multiplier === 0 || isPlaing}
             >
